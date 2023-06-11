@@ -1,0 +1,50 @@
+GET http://127.0.0.1:8234/api/agent/list
+Accept: application/json
+
+###
+GET http://127.0.0.1:8234/api/agent/access
+Accept: application/json
+
+###
+POST http://127.0.0.1:8234/api/agent/access
+Content-Type: application/json
+
+{
+  "token": "12345"
+}
+###
+DELETE http://127.0.0.1:8234/api/agent/access
+Content-Type: application/json
+
+{
+  "token": "12345"
+}
+###
+GET http://127.0.0.1:8234/api/agent/tags
+Accept: application/json
+
+###
+POST http://127.0.0.1:8234/api/agent/tags
+Content-Type: application/json
+
+["a","b"]
+###
+DELETE http://127.0.0.1:8234/api/agent/tags
+Content-Type: application/json
+
+["a","b"]
+###
+GET http://127.0.0.1:8234/api/agent/tag-link/1
+Accept: application/json
+
+###
+POST http://127.0.0.1:8234/api/agent/tag-link/1
+Content-Type: application/json
+
+[2,3]
+###
+DELETE http://127.0.0.1:8234/api/agent/tag-link/1
+Content-Type: application/json
+
+[2,3]
+###
