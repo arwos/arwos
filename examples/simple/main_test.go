@@ -31,7 +31,7 @@ func TestIntegration_Controller_Hello(t *testing.T) {
 }
 
 func Benchmark_Controller_Hello(b *testing.B) {
-	cli, err := rpc.NewClient("/tmp/app.sock", rpc.ClientMaxConns(1))
+	cli, err := rpc.NewClient("/tmp/app.sock", rpc.ClientMaxConns(10))
 	casecheck.NoError(b, err)
 
 	b.ReportAllocs()

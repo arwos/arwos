@@ -3,7 +3,7 @@ CREATE SEQUENCE IF NOT EXISTS "envs_id_seq" INCREMENT 1 MINVALUE 1 MAXVALUE 9223
 
 -- TABLE
 CREATE TABLE IF NOT EXISTS "envs" (
-	 "id" BIGINT DEFAULT nextval('envs_id_seq') NOT NULL NOT NULL ,
+	 "id" BIGINT DEFAULT nextval('envs_id_seq') NOT NULL ,
 	 CONSTRAINT "envs_id_pk" PRIMARY KEY ("id"),
 	 "plugin_id" BIGINT NOT NULL ,
 	 CONSTRAINT "envs_plugin_id_fk" FOREIGN KEY ("plugin_id") REFERENCES "plugins" ("id") ON DELETE CASCADE NOT DEFERRABLE,

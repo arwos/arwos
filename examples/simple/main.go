@@ -18,13 +18,13 @@ import (
 
 func main() {
 
-	app := plugin.New(manifest.Manifest{
+	app := plugin.New(manifest.Model{
 		Name:        "simple",
 		Package:     "com.example.simple",
 		Description: "Simple Addon",
 		Author:      "UserName <user@example.com>",
 		Version:     "v0.0.0-dev",
-		Type:        manifest.TypeApp,
+		Type:        manifest.TypeService,
 		Links: []manifest.Link{
 			{Url: "https://example.com", Description: "Web"},
 			{Url: "https://tg/example", Description: "Telegram"},

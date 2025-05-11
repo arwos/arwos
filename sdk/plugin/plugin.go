@@ -22,16 +22,19 @@ type Plugin interface {
 }
 
 type _plugin struct {
-	info manifest.Manifest
-	envs env.Envs
+	info manifest.Model
+	envs env.Model
 	deps []any
 	conf *data.Buffer
 	cli  *console.Console
 }
 
-func New(m manifest.Manifest) Plugin {
+func New(m manifest.Model) Plugin {
 	a := &_plugin{
-		cli:  console.New("arwos.plugin", fmt.Sprintf("author: %s, pkg: %s, des: %s", m.Author, m.Package, m.Description)),
+		cli: console.New(
+			"arwos.plugin",
+			fmt.Sprintf("author: %s, pkg: %s, des: %s", m.Author, m.Package, m.Description),
+		),
 		conf: data.NewBuffer(1024),
 		info: m,
 	}

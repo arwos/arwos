@@ -3,7 +3,7 @@ CREATE SEQUENCE IF NOT EXISTS "plugins_id_seq" INCREMENT 1 MINVALUE 1 MAXVALUE 9
 
 -- TABLE
 CREATE TABLE IF NOT EXISTS "plugins" (
-	 "id" BIGINT DEFAULT nextval('plugins_id_seq') NOT NULL NOT NULL ,
+	 "id" BIGINT DEFAULT nextval('plugins_id_seq') NOT NULL ,
 	 CONSTRAINT "plugins_id_pk" PRIMARY KEY ("id"),
 	 "pkg" VARCHAR(300) NOT NULL,
 	 "ver" VARCHAR(50) NOT NULL,

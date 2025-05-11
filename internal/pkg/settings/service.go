@@ -7,11 +7,11 @@ import (
 )
 
 type Service struct {
-	repo *repoModels
+	repo *RepositoryModels
 }
 
 func NewService(db orm.ORM) *Service {
-	return &Service{repo: newRepoModels(db)}
+	return &Service{repo: newRepositoryModels(db)}
 }
 
 func (s *Service) GetEnvByPluginId(ctx context.Context, id int64) ([]EnvModel, error) {

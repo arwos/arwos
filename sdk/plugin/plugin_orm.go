@@ -47,23 +47,28 @@ pgsql:
 		envs = append(envs,
 			env.Env{
 				Description: "PostgresSQL HOST for tag: " + tag,
-				Key:         "DB_" + envSuffix + "_HOST", Default: "127.0.0.1",
+				Key:         "DB_" + envSuffix + "_HOST",
+				Default:     "127.0.0.1",
 			},
 			env.Env{
 				Description: "PostgresSQL PORT for tag: " + tag,
-				Key:         "DB_" + envSuffix + "_PORT", Default: "5432",
+				Key:         "DB_" + envSuffix + "_PORT",
+				Default:     "5432",
 			},
 			env.Env{
 				Description: "PostgresSQL USER for tag: " + tag,
-				Key:         "DB_" + envSuffix + "_USER", Default: "postgres",
+				Key:         "DB_" + envSuffix + "_USER",
+				Default:     "postgres",
 			},
 			env.Env{
 				Description: "PostgresSQL PASSWORD for tag: " + tag,
-				Key:         "DB_" + envSuffix + "_PASSWRD", Default: "postgres",
+				Key:         "DB_" + envSuffix + "_PASSWRD",
+				Default:     "postgres",
 			},
 			env.Env{
 				Description: "PostgresSQL SCHEMA for tag: " + tag,
-				Key:         "DB_" + envSuffix + "_SCHEMA", Default: createSchema(a.info.Package),
+				Key:         "DB_" + envSuffix + "_SCHEMA",
+				Default:     createSchema(a.info.Package),
 			},
 		)
 	}

@@ -30,3 +30,6 @@ pre-commit: install license lint tests build
 .PHONY: ci
 ci: pre-commit
 
+.PHONY: run
+run:
+	go run cmd/arwos/main.go --config=config/config.dev.yaml

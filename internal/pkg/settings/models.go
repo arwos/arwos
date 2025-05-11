@@ -15,8 +15,8 @@ type PluginModel struct {
 	Version string // col=ver len=50
 	Hash    string // col=hash len=64
 
-	Active bool               // col=active
-	Meta   *manifest.Manifest // col=meta
+	Active bool            // col=active
+	Meta   *manifest.Model // col=meta
 
 	CreatedAt time.Time // col=created_at auto=c:time.Now()
 	UpdatedAt time.Time // col=updated_at auto=time.Now()

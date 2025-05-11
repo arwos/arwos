@@ -8,24 +8,24 @@ import (
 	"go.osspkg.com/goppy/v2/orm"
 )
 
-type repoModels struct {
+type RepositoryModels struct {
 	orm        orm.ORM
 	rtag, wtag string
 }
 
-func newRepoModels(orm orm.ORM) *repoModels {
-	return &repoModels{
+func newRepositoryModels(orm orm.ORM) *RepositoryModels {
+	return &RepositoryModels{
 		orm:  orm,
 		rtag: "slave",
 		wtag: "master",
 	}
 }
 
-func (v *repoModels) TagSlave() orm.Stmt {
+func (v *RepositoryModels) TagSlave() orm.Stmt {
 	return v.orm.Tag(v.rtag)
 }
 
-func (v *repoModels) TagMaster() orm.Stmt {
+func (v *RepositoryModels) TagMaster() orm.Stmt {
 	return v.orm.Tag(v.wtag)
 }
 
@@ -34,7 +34,7 @@ const sqlPluginsCreatePluginModel = `INSERT INTO "plugins" ("pkg", "ver", "hash"
 			RETURNING ("id");
 `
 
-func (v *repoModels) CreatePluginModel(ctx context.Context, m *PluginModel) error {
+func (v *RepositoryModels) CreatePluginModel(ctx context.Context, m *PluginModel) error {
 	m.CreatedAt = time.Now()
 	m.UpdatedAt = time.Now()
 
@@ -54,7 +54,7 @@ const sqlPluginsUpdatePluginModel = `UPDATE "plugins" SET
 			 WHERE "id" = $8;
 `
 
-func (v *repoModels) UpdatePluginModel(ctx context.Context, m *PluginModel) error {
+func (v *RepositoryModels) UpdatePluginModel(ctx context.Context, m *PluginModel) error {
 	m.UpdatedAt = time.Now()
 
 	return v.orm.Tag(v.wtag).Exec(ctx, "plugins_update", func(e orm.Executor) {
@@ -67,25 +67,25 @@ const sqlPluginsDeletePluginModel = `DELETE FROM "plugins"
 			 WHERE "id" = $1;
 `
 
-func (v *repoModels) DeletePluginModel(ctx context.Context, pk int64) error {
+func (v *RepositoryModels) DeletePluginModel(ctx context.Context, pk int64) error {
 	return v.orm.Tag(v.wtag).Exec(ctx, "plugins_delete", func(e orm.Executor) {
 		e.SQL(sqlPluginsDeletePluginModel)
 		e.Params(pk)
 	})
 }
 
-const sqlPluginsReadPluginModelAll = `SELECT "id", "pkg", "ver", "hash", "active", "meta", "created_at", "updated_at"
+const sqlPluginsReadPluginModelAll = `SELECT "pkg", "ver", "hash", "active", "meta", "created_at", "updated_at"
 			 FROM "plugins";
 `
 
-func (v *repoModels) ReadPluginModelAll(ctx context.Context) ([]PluginModel,
+func (v *RepositoryModels) ReadPluginModelAll(ctx context.Context) ([]PluginModel,
 	error) {
 	result := make([]PluginModel, 0, 2)
 	err := v.orm.Tag(v.rtag).Query(ctx, "plugins_read_all", func(q orm.Querier) {
 		q.SQL(sqlPluginsReadPluginModelAll)
 		q.Bind(func(bind orm.Scanner) error {
 			m := PluginModel{}
-			if e := bind.Scan(&m.Id, &m.Package, &m.Version, &m.Hash, &m.Active, &m.Meta, &m.CreatedAt, &m.UpdatedAt); e != nil {
+			if e := bind.Scan(&m.Package, &m.Version, &m.Hash, &m.Active, &m.Meta, &m.CreatedAt, &m.UpdatedAt); e != nil {
 				return e
 			}
 			result = append(result, m)
@@ -98,12 +98,12 @@ func (v *repoModels) ReadPluginModelAll(ctx context.Context) ([]PluginModel,
 	return result, nil
 }
 
-const sqlPluginsReadPluginModelById = `SELECT "id", "pkg", "ver", "hash", "active", "meta", "created_at", "updated_at"
+const sqlPluginsReadPluginModelById = `SELECT "pkg", "ver", "hash", "active", "meta", "created_at", "updated_at"
 			 FROM "plugins"
 			 WHERE "id" = ANY($1);
 `
 
-func (v *repoModels) ReadPluginModelById(
+func (v *RepositoryModels) ReadPluginModelById(
 	ctx context.Context, args ...int64,
 ) ([]PluginModel, error) {
 	result := make([]PluginModel, 0, 2)
@@ -111,7 +111,7 @@ func (v *repoModels) ReadPluginModelById(
 		q.SQL(sqlPluginsReadPluginModelById, args)
 		q.Bind(func(bind orm.Scanner) error {
 			m := PluginModel{}
-			if e := bind.Scan(&m.Id, &m.Package, &m.Version, &m.Hash, &m.Active, &m.Meta, &m.CreatedAt, &m.UpdatedAt); e != nil {
+			if e := bind.Scan(&m.Package, &m.Version, &m.Hash, &m.Active, &m.Meta, &m.CreatedAt, &m.UpdatedAt); e != nil {
 				return e
 			}
 			result = append(result, m)
@@ -124,12 +124,12 @@ func (v *repoModels) ReadPluginModelById(
 	return result, nil
 }
 
-const sqlPluginsReadPluginModelByPackage = `SELECT "id", "pkg", "ver", "hash", "active", "meta", "created_at", "updated_at"
+const sqlPluginsReadPluginModelByPackage = `SELECT "pkg", "ver", "hash", "active", "meta", "created_at", "updated_at"
 			 FROM "plugins"
 			 WHERE "pkg" = ANY($1);
 `
 
-func (v *repoModels) ReadPluginModelByPackage(
+func (v *RepositoryModels) ReadPluginModelByPackage(
 	ctx context.Context, args ...string,
 ) ([]PluginModel, error) {
 	result := make([]PluginModel, 0, 2)
@@ -137,7 +137,7 @@ func (v *repoModels) ReadPluginModelByPackage(
 		q.SQL(sqlPluginsReadPluginModelByPackage, args)
 		q.Bind(func(bind orm.Scanner) error {
 			m := PluginModel{}
-			if e := bind.Scan(&m.Id, &m.Package, &m.Version, &m.Hash, &m.Active, &m.Meta, &m.CreatedAt, &m.UpdatedAt); e != nil {
+			if e := bind.Scan(&m.Package, &m.Version, &m.Hash, &m.Active, &m.Meta, &m.CreatedAt, &m.UpdatedAt); e != nil {
 				return e
 			}
 			result = append(result, m)
@@ -150,12 +150,12 @@ func (v *repoModels) ReadPluginModelByPackage(
 	return result, nil
 }
 
-const sqlPluginsReadPluginModelByVersion = `SELECT "id", "pkg", "ver", "hash", "active", "meta", "created_at", "updated_at"
+const sqlPluginsReadPluginModelByVersion = `SELECT "pkg", "ver", "hash", "active", "meta", "created_at", "updated_at"
 			 FROM "plugins"
 			 WHERE "ver" = ANY($1);
 `
 
-func (v *repoModels) ReadPluginModelByVersion(
+func (v *RepositoryModels) ReadPluginModelByVersion(
 	ctx context.Context, args ...string,
 ) ([]PluginModel, error) {
 	result := make([]PluginModel, 0, 2)
@@ -163,7 +163,7 @@ func (v *repoModels) ReadPluginModelByVersion(
 		q.SQL(sqlPluginsReadPluginModelByVersion, args)
 		q.Bind(func(bind orm.Scanner) error {
 			m := PluginModel{}
-			if e := bind.Scan(&m.Id, &m.Package, &m.Version, &m.Hash, &m.Active, &m.Meta, &m.CreatedAt, &m.UpdatedAt); e != nil {
+			if e := bind.Scan(&m.Package, &m.Version, &m.Hash, &m.Active, &m.Meta, &m.CreatedAt, &m.UpdatedAt); e != nil {
 				return e
 			}
 			result = append(result, m)
@@ -176,12 +176,12 @@ func (v *repoModels) ReadPluginModelByVersion(
 	return result, nil
 }
 
-const sqlPluginsReadPluginModelByHash = `SELECT "id", "pkg", "ver", "hash", "active", "meta", "created_at", "updated_at"
+const sqlPluginsReadPluginModelByHash = `SELECT "pkg", "ver", "hash", "active", "meta", "created_at", "updated_at"
 			 FROM "plugins"
 			 WHERE "hash" = ANY($1);
 `
 
-func (v *repoModels) ReadPluginModelByHash(
+func (v *RepositoryModels) ReadPluginModelByHash(
 	ctx context.Context, args ...string,
 ) ([]PluginModel, error) {
 	result := make([]PluginModel, 0, 2)
@@ -189,7 +189,7 @@ func (v *repoModels) ReadPluginModelByHash(
 		q.SQL(sqlPluginsReadPluginModelByHash, args)
 		q.Bind(func(bind orm.Scanner) error {
 			m := PluginModel{}
-			if e := bind.Scan(&m.Id, &m.Package, &m.Version, &m.Hash, &m.Active, &m.Meta, &m.CreatedAt, &m.UpdatedAt); e != nil {
+			if e := bind.Scan(&m.Package, &m.Version, &m.Hash, &m.Active, &m.Meta, &m.CreatedAt, &m.UpdatedAt); e != nil {
 				return e
 			}
 			result = append(result, m)
@@ -202,12 +202,12 @@ func (v *repoModels) ReadPluginModelByHash(
 	return result, nil
 }
 
-const sqlPluginsReadPluginModelByActive = `SELECT "id", "pkg", "ver", "hash", "active", "meta", "created_at", "updated_at"
+const sqlPluginsReadPluginModelByActive = `SELECT "pkg", "ver", "hash", "active", "meta", "created_at", "updated_at"
 			 FROM "plugins"
 			 WHERE "active" = ANY($1);
 `
 
-func (v *repoModels) ReadPluginModelByActive(
+func (v *RepositoryModels) ReadPluginModelByActive(
 	ctx context.Context, args ...bool,
 ) ([]PluginModel, error) {
 	result := make([]PluginModel, 0, 2)
@@ -215,7 +215,7 @@ func (v *repoModels) ReadPluginModelByActive(
 		q.SQL(sqlPluginsReadPluginModelByActive, args)
 		q.Bind(func(bind orm.Scanner) error {
 			m := PluginModel{}
-			if e := bind.Scan(&m.Id, &m.Package, &m.Version, &m.Hash, &m.Active, &m.Meta, &m.CreatedAt, &m.UpdatedAt); e != nil {
+			if e := bind.Scan(&m.Package, &m.Version, &m.Hash, &m.Active, &m.Meta, &m.CreatedAt, &m.UpdatedAt); e != nil {
 				return e
 			}
 			result = append(result, m)
@@ -233,7 +233,7 @@ const sqlEnvsCreateEnvModel = `INSERT INTO "envs" ("plugin_id", "key", "value", 
 			RETURNING ("id");
 `
 
-func (v *repoModels) CreateEnvModel(ctx context.Context, m *EnvModel) error {
+func (v *RepositoryModels) CreateEnvModel(ctx context.Context, m *EnvModel) error {
 	m.CreatedAt = time.Now()
 	m.UpdatedAt = time.Now()
 
@@ -253,7 +253,7 @@ const sqlEnvsUpdateEnvModel = `UPDATE "envs" SET
 			 WHERE "id" = $8;
 `
 
-func (v *repoModels) UpdateEnvModel(ctx context.Context, m *EnvModel) error {
+func (v *RepositoryModels) UpdateEnvModel(ctx context.Context, m *EnvModel) error {
 	m.UpdatedAt = time.Now()
 
 	return v.orm.Tag(v.wtag).Exec(ctx, "envs_update", func(e orm.Executor) {
@@ -266,25 +266,25 @@ const sqlEnvsDeleteEnvModel = `DELETE FROM "envs"
 			 WHERE "id" = $1;
 `
 
-func (v *repoModels) DeleteEnvModel(ctx context.Context, pk int64) error {
+func (v *RepositoryModels) DeleteEnvModel(ctx context.Context, pk int64) error {
 	return v.orm.Tag(v.wtag).Exec(ctx, "envs_delete", func(e orm.Executor) {
 		e.SQL(sqlEnvsDeleteEnvModel)
 		e.Params(pk)
 	})
 }
 
-const sqlEnvsReadEnvModelAll = `SELECT "id", "plugin_id", "key", "value", "default_value", "desc", "created_at", "updated_at"
+const sqlEnvsReadEnvModelAll = `SELECT "plugin_id", "key", "value", "default_value", "desc", "created_at", "updated_at"
 			 FROM "envs";
 `
 
-func (v *repoModels) ReadEnvModelAll(ctx context.Context) ([]EnvModel,
+func (v *RepositoryModels) ReadEnvModelAll(ctx context.Context) ([]EnvModel,
 	error) {
 	result := make([]EnvModel, 0, 2)
 	err := v.orm.Tag(v.rtag).Query(ctx, "envs_read_all", func(q orm.Querier) {
 		q.SQL(sqlEnvsReadEnvModelAll)
 		q.Bind(func(bind orm.Scanner) error {
 			m := EnvModel{}
-			if e := bind.Scan(&m.Id, &m.PluginId, &m.Key, &m.Value, &m.Default, &m.Desc, &m.CreatedAt, &m.UpdatedAt); e != nil {
+			if e := bind.Scan(&m.PluginId, &m.Key, &m.Value, &m.Default, &m.Desc, &m.CreatedAt, &m.UpdatedAt); e != nil {
 				return e
 			}
 			result = append(result, m)
@@ -297,12 +297,12 @@ func (v *repoModels) ReadEnvModelAll(ctx context.Context) ([]EnvModel,
 	return result, nil
 }
 
-const sqlEnvsReadEnvModelById = `SELECT "id", "plugin_id", "key", "value", "default_value", "desc", "created_at", "updated_at"
+const sqlEnvsReadEnvModelById = `SELECT "plugin_id", "key", "value", "default_value", "desc", "created_at", "updated_at"
 			 FROM "envs"
 			 WHERE "id" = ANY($1);
 `
 
-func (v *repoModels) ReadEnvModelById(
+func (v *RepositoryModels) ReadEnvModelById(
 	ctx context.Context, args ...int64,
 ) ([]EnvModel, error) {
 	result := make([]EnvModel, 0, 2)
@@ -310,7 +310,7 @@ func (v *repoModels) ReadEnvModelById(
 		q.SQL(sqlEnvsReadEnvModelById, args)
 		q.Bind(func(bind orm.Scanner) error {
 			m := EnvModel{}
-			if e := bind.Scan(&m.Id, &m.PluginId, &m.Key, &m.Value, &m.Default, &m.Desc, &m.CreatedAt, &m.UpdatedAt); e != nil {
+			if e := bind.Scan(&m.PluginId, &m.Key, &m.Value, &m.Default, &m.Desc, &m.CreatedAt, &m.UpdatedAt); e != nil {
 				return e
 			}
 			result = append(result, m)
@@ -323,12 +323,12 @@ func (v *repoModels) ReadEnvModelById(
 	return result, nil
 }
 
-const sqlEnvsReadEnvModelByPluginId = `SELECT "id", "plugin_id", "key", "value", "default_value", "desc", "created_at", "updated_at"
+const sqlEnvsReadEnvModelByPluginId = `SELECT "plugin_id", "key", "value", "default_value", "desc", "created_at", "updated_at"
 			 FROM "envs"
 			 WHERE "plugin_id" = ANY($1);
 `
 
-func (v *repoModels) ReadEnvModelByPluginId(
+func (v *RepositoryModels) ReadEnvModelByPluginId(
 	ctx context.Context, args ...int64,
 ) ([]EnvModel, error) {
 	result := make([]EnvModel, 0, 2)
@@ -336,7 +336,7 @@ func (v *repoModels) ReadEnvModelByPluginId(
 		q.SQL(sqlEnvsReadEnvModelByPluginId, args)
 		q.Bind(func(bind orm.Scanner) error {
 			m := EnvModel{}
-			if e := bind.Scan(&m.Id, &m.PluginId, &m.Key, &m.Value, &m.Default, &m.Desc, &m.CreatedAt, &m.UpdatedAt); e != nil {
+			if e := bind.Scan(&m.PluginId, &m.Key, &m.Value, &m.Default, &m.Desc, &m.CreatedAt, &m.UpdatedAt); e != nil {
 				return e
 			}
 			result = append(result, m)
@@ -349,12 +349,12 @@ func (v *repoModels) ReadEnvModelByPluginId(
 	return result, nil
 }
 
-const sqlEnvsReadEnvModelByKey = `SELECT "id", "plugin_id", "key", "value", "default_value", "desc", "created_at", "updated_at"
+const sqlEnvsReadEnvModelByKey = `SELECT "plugin_id", "key", "value", "default_value", "desc", "created_at", "updated_at"
 			 FROM "envs"
 			 WHERE "key" = ANY($1);
 `
 
-func (v *repoModels) ReadEnvModelByKey(
+func (v *RepositoryModels) ReadEnvModelByKey(
 	ctx context.Context, args ...string,
 ) ([]EnvModel, error) {
 	result := make([]EnvModel, 0, 2)
@@ -362,7 +362,7 @@ func (v *repoModels) ReadEnvModelByKey(
 		q.SQL(sqlEnvsReadEnvModelByKey, args)
 		q.Bind(func(bind orm.Scanner) error {
 			m := EnvModel{}
-			if e := bind.Scan(&m.Id, &m.PluginId, &m.Key, &m.Value, &m.Default, &m.Desc, &m.CreatedAt, &m.UpdatedAt); e != nil {
+			if e := bind.Scan(&m.PluginId, &m.Key, &m.Value, &m.Default, &m.Desc, &m.CreatedAt, &m.UpdatedAt); e != nil {
 				return e
 			}
 			result = append(result, m)
@@ -375,12 +375,12 @@ func (v *repoModels) ReadEnvModelByKey(
 	return result, nil
 }
 
-const sqlEnvsReadEnvModelByValue = `SELECT "id", "plugin_id", "key", "value", "default_value", "desc", "created_at", "updated_at"
+const sqlEnvsReadEnvModelByValue = `SELECT "plugin_id", "key", "value", "default_value", "desc", "created_at", "updated_at"
 			 FROM "envs"
 			 WHERE "value" = ANY($1);
 `
 
-func (v *repoModels) ReadEnvModelByValue(
+func (v *RepositoryModels) ReadEnvModelByValue(
 	ctx context.Context, args ...string,
 ) ([]EnvModel, error) {
 	result := make([]EnvModel, 0, 2)
@@ -388,7 +388,7 @@ func (v *repoModels) ReadEnvModelByValue(
 		q.SQL(sqlEnvsReadEnvModelByValue, args)
 		q.Bind(func(bind orm.Scanner) error {
 			m := EnvModel{}
-			if e := bind.Scan(&m.Id, &m.PluginId, &m.Key, &m.Value, &m.Default, &m.Desc, &m.CreatedAt, &m.UpdatedAt); e != nil {
+			if e := bind.Scan(&m.PluginId, &m.Key, &m.Value, &m.Default, &m.Desc, &m.CreatedAt, &m.UpdatedAt); e != nil {
 				return e
 			}
 			result = append(result, m)
@@ -401,12 +401,12 @@ func (v *repoModels) ReadEnvModelByValue(
 	return result, nil
 }
 
-const sqlEnvsReadEnvModelByDefault = `SELECT "id", "plugin_id", "key", "value", "default_value", "desc", "created_at", "updated_at"
+const sqlEnvsReadEnvModelByDefault = `SELECT "plugin_id", "key", "value", "default_value", "desc", "created_at", "updated_at"
 			 FROM "envs"
 			 WHERE "default_value" = ANY($1);
 `
 
-func (v *repoModels) ReadEnvModelByDefault(
+func (v *RepositoryModels) ReadEnvModelByDefault(
 	ctx context.Context, args ...string,
 ) ([]EnvModel, error) {
 	result := make([]EnvModel, 0, 2)
@@ -414,7 +414,7 @@ func (v *repoModels) ReadEnvModelByDefault(
 		q.SQL(sqlEnvsReadEnvModelByDefault, args)
 		q.Bind(func(bind orm.Scanner) error {
 			m := EnvModel{}
-			if e := bind.Scan(&m.Id, &m.PluginId, &m.Key, &m.Value, &m.Default, &m.Desc, &m.CreatedAt, &m.UpdatedAt); e != nil {
+			if e := bind.Scan(&m.PluginId, &m.Key, &m.Value, &m.Default, &m.Desc, &m.CreatedAt, &m.UpdatedAt); e != nil {
 				return e
 			}
 			result = append(result, m)
@@ -427,12 +427,12 @@ func (v *repoModels) ReadEnvModelByDefault(
 	return result, nil
 }
 
-const sqlEnvsReadEnvModelByDesc = `SELECT "id", "plugin_id", "key", "value", "default_value", "desc", "created_at", "updated_at"
+const sqlEnvsReadEnvModelByDesc = `SELECT "plugin_id", "key", "value", "default_value", "desc", "created_at", "updated_at"
 			 FROM "envs"
 			 WHERE "desc" = ANY($1);
 `
 
-func (v *repoModels) ReadEnvModelByDesc(
+func (v *RepositoryModels) ReadEnvModelByDesc(
 	ctx context.Context, args ...string,
 ) ([]EnvModel, error) {
 	result := make([]EnvModel, 0, 2)
@@ -440,7 +440,7 @@ func (v *repoModels) ReadEnvModelByDesc(
 		q.SQL(sqlEnvsReadEnvModelByDesc, args)
 		q.Bind(func(bind orm.Scanner) error {
 			m := EnvModel{}
-			if e := bind.Scan(&m.Id, &m.PluginId, &m.Key, &m.Value, &m.Default, &m.Desc, &m.CreatedAt, &m.UpdatedAt); e != nil {
+			if e := bind.Scan(&m.PluginId, &m.Key, &m.Value, &m.Default, &m.Desc, &m.CreatedAt, &m.UpdatedAt); e != nil {
 				return e
 			}
 			result = append(result, m)

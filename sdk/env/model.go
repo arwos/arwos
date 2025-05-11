@@ -7,12 +7,14 @@ package env
 
 //go:generate easyjson
 
+const FileName = "envs.yaml"
+
 //easyjson:json
 type Env struct {
-	Description string `json:"d"`
-	Key         string `json:"k"`
-	Default     string `json:"v"`
+	Description string `json:"description" yaml:"description"`
+	Key         string `json:"key" yaml:"key"`
+	Default     string `json:"default" yaml:"default"`
 }
 
 //easyjson:json
-type Envs []Env
+type Model []Env

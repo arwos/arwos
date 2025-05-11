@@ -4,7 +4,6 @@ package manifest
 
 import (
 	json "encoding/json"
-
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
@@ -18,7 +17,196 @@ var (
 	_ easyjson.Marshaler
 )
 
-func easyjson4ef6ea8bDecodeGoArwosOrgArwosSdkManifest(in *jlexer.Lexer, out *Menu) {
+func easyjson4ef6ea8bDecodeGoArwosOrgArwosSdkManifest(in *jlexer.Lexer, out *Model) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "type":
+			out.Type = Type(in.String())
+		case "path":
+			out.Path = string(in.String())
+		case "name":
+			out.Name = string(in.String())
+		case "package":
+			out.Package = string(in.String())
+		case "description":
+			out.Description = string(in.String())
+		case "author":
+			out.Author = string(in.String())
+		case "version":
+			out.Version = string(in.String())
+		case "menu":
+			(out.Menu).UnmarshalEasyJSON(in)
+		case "links":
+			if in.IsNull() {
+				in.Skip()
+				out.Links = nil
+			} else {
+				in.Delim('[')
+				if out.Links == nil {
+					if !in.IsDelim(']') {
+						out.Links = make([]Link, 0, 2)
+					} else {
+						out.Links = []Link{}
+					}
+				} else {
+					out.Links = (out.Links)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v1 Link
+					(v1).UnmarshalEasyJSON(in)
+					out.Links = append(out.Links, v1)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
+		case "alias":
+			if in.IsNull() {
+				in.Skip()
+				out.Alias = nil
+			} else {
+				in.Delim('[')
+				if out.Alias == nil {
+					if !in.IsDelim(']') {
+						out.Alias = make([]Alias, 0, 2)
+					} else {
+						out.Alias = []Alias{}
+					}
+				} else {
+					out.Alias = (out.Alias)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v2 Alias
+					(v2).UnmarshalEasyJSON(in)
+					out.Alias = append(out.Alias, v2)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjson4ef6ea8bEncodeGoArwosOrgArwosSdkManifest(out *jwriter.Writer, in Model) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"type\":"
+		out.RawString(prefix[1:])
+		out.String(string(in.Type))
+	}
+	{
+		const prefix string = ",\"path\":"
+		out.RawString(prefix)
+		out.String(string(in.Path))
+	}
+	{
+		const prefix string = ",\"name\":"
+		out.RawString(prefix)
+		out.String(string(in.Name))
+	}
+	{
+		const prefix string = ",\"package\":"
+		out.RawString(prefix)
+		out.String(string(in.Package))
+	}
+	{
+		const prefix string = ",\"description\":"
+		out.RawString(prefix)
+		out.String(string(in.Description))
+	}
+	{
+		const prefix string = ",\"author\":"
+		out.RawString(prefix)
+		out.String(string(in.Author))
+	}
+	{
+		const prefix string = ",\"version\":"
+		out.RawString(prefix)
+		out.String(string(in.Version))
+	}
+	{
+		const prefix string = ",\"menu\":"
+		out.RawString(prefix)
+		(in.Menu).MarshalEasyJSON(out)
+	}
+	if len(in.Links) != 0 {
+		const prefix string = ",\"links\":"
+		out.RawString(prefix)
+		{
+			out.RawByte('[')
+			for v3, v4 := range in.Links {
+				if v3 > 0 {
+					out.RawByte(',')
+				}
+				(v4).MarshalEasyJSON(out)
+			}
+			out.RawByte(']')
+		}
+	}
+	if len(in.Alias) != 0 {
+		const prefix string = ",\"alias\":"
+		out.RawString(prefix)
+		{
+			out.RawByte('[')
+			for v5, v6 := range in.Alias {
+				if v5 > 0 {
+					out.RawByte(',')
+				}
+				(v6).MarshalEasyJSON(out)
+			}
+			out.RawByte(']')
+		}
+	}
+	out.RawByte('}')
+}
+
+// MarshalJSON supports json.Marshaler interface
+func (v Model) MarshalJSON() ([]byte, error) {
+	w := jwriter.Writer{}
+	easyjson4ef6ea8bEncodeGoArwosOrgArwosSdkManifest(&w, v)
+	return w.Buffer.BuildBytes(), w.Error
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v Model) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjson4ef6ea8bEncodeGoArwosOrgArwosSdkManifest(w, v)
+}
+
+// UnmarshalJSON supports json.Unmarshaler interface
+func (v *Model) UnmarshalJSON(data []byte) error {
+	r := jlexer.Lexer{Data: data}
+	easyjson4ef6ea8bDecodeGoArwosOrgArwosSdkManifest(&r, v)
+	return r.Error()
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *Model) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjson4ef6ea8bDecodeGoArwosOrgArwosSdkManifest(l, v)
+}
+func easyjson4ef6ea8bDecodeGoArwosOrgArwosSdkManifest1(in *jlexer.Lexer, out *Menu) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -51,7 +239,7 @@ func easyjson4ef6ea8bDecodeGoArwosOrgArwosSdkManifest(in *jlexer.Lexer, out *Men
 		in.Consumed()
 	}
 }
-func easyjson4ef6ea8bEncodeGoArwosOrgArwosSdkManifest(out *jwriter.Writer, in Menu) {
+func easyjson4ef6ea8bEncodeGoArwosOrgArwosSdkManifest1(out *jwriter.Writer, in Menu) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -71,171 +259,24 @@ func easyjson4ef6ea8bEncodeGoArwosOrgArwosSdkManifest(out *jwriter.Writer, in Me
 // MarshalJSON supports json.Marshaler interface
 func (v Menu) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjson4ef6ea8bEncodeGoArwosOrgArwosSdkManifest(&w, v)
-	return w.Buffer.BuildBytes(), w.Error
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v Menu) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson4ef6ea8bEncodeGoArwosOrgArwosSdkManifest(w, v)
-}
-
-// UnmarshalJSON supports json.Unmarshaler interface
-func (v *Menu) UnmarshalJSON(data []byte) error {
-	r := jlexer.Lexer{Data: data}
-	easyjson4ef6ea8bDecodeGoArwosOrgArwosSdkManifest(&r, v)
-	return r.Error()
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *Menu) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson4ef6ea8bDecodeGoArwosOrgArwosSdkManifest(l, v)
-}
-func easyjson4ef6ea8bDecodeGoArwosOrgArwosSdkManifest1(in *jlexer.Lexer, out *Manifest) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "name":
-			out.Name = string(in.String())
-		case "package":
-			out.Package = string(in.String())
-		case "description":
-			out.Description = string(in.String())
-		case "author":
-			out.Author = string(in.String())
-		case "version":
-			out.Version = string(in.String())
-		case "type":
-			out.Type = Type(in.Uint64())
-		case "links":
-			if in.IsNull() {
-				in.Skip()
-				out.Links = nil
-			} else {
-				in.Delim('[')
-				if out.Links == nil {
-					if !in.IsDelim(']') {
-						out.Links = make([]Link, 0, 2)
-					} else {
-						out.Links = []Link{}
-					}
-				} else {
-					out.Links = (out.Links)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v1 Link
-					(v1).UnmarshalEasyJSON(in)
-					out.Links = append(out.Links, v1)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "menu":
-			(out.Menu).UnmarshalEasyJSON(in)
-		default:
-			in.SkipRecursive()
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjson4ef6ea8bEncodeGoArwosOrgArwosSdkManifest1(out *jwriter.Writer, in Manifest) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	{
-		const prefix string = ",\"name\":"
-		out.RawString(prefix[1:])
-		out.String(string(in.Name))
-	}
-	{
-		const prefix string = ",\"package\":"
-		out.RawString(prefix)
-		out.String(string(in.Package))
-	}
-	{
-		const prefix string = ",\"description\":"
-		out.RawString(prefix)
-		out.String(string(in.Description))
-	}
-	{
-		const prefix string = ",\"author\":"
-		out.RawString(prefix)
-		out.String(string(in.Author))
-	}
-	{
-		const prefix string = ",\"version\":"
-		out.RawString(prefix)
-		out.String(string(in.Version))
-	}
-	{
-		const prefix string = ",\"type\":"
-		out.RawString(prefix)
-		out.Uint64(uint64(in.Type))
-	}
-	{
-		const prefix string = ",\"links\":"
-		out.RawString(prefix)
-		if in.Links == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
-		} else {
-			out.RawByte('[')
-			for v2, v3 := range in.Links {
-				if v2 > 0 {
-					out.RawByte(',')
-				}
-				(v3).MarshalEasyJSON(out)
-			}
-			out.RawByte(']')
-		}
-	}
-	{
-		const prefix string = ",\"menu\":"
-		out.RawString(prefix)
-		(in.Menu).MarshalEasyJSON(out)
-	}
-	out.RawByte('}')
-}
-
-// MarshalJSON supports json.Marshaler interface
-func (v Manifest) MarshalJSON() ([]byte, error) {
-	w := jwriter.Writer{}
 	easyjson4ef6ea8bEncodeGoArwosOrgArwosSdkManifest1(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v Manifest) MarshalEasyJSON(w *jwriter.Writer) {
+func (v Menu) MarshalEasyJSON(w *jwriter.Writer) {
 	easyjson4ef6ea8bEncodeGoArwosOrgArwosSdkManifest1(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
-func (v *Manifest) UnmarshalJSON(data []byte) error {
+func (v *Menu) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
 	easyjson4ef6ea8bDecodeGoArwosOrgArwosSdkManifest1(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *Manifest) UnmarshalEasyJSON(l *jlexer.Lexer) {
+func (v *Menu) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjson4ef6ea8bDecodeGoArwosOrgArwosSdkManifest1(l, v)
 }
 func easyjson4ef6ea8bDecodeGoArwosOrgArwosSdkManifest2(in *jlexer.Lexer, out *Link) {
@@ -310,4 +351,77 @@ func (v *Link) UnmarshalJSON(data []byte) error {
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *Link) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjson4ef6ea8bDecodeGoArwosOrgArwosSdkManifest2(l, v)
+}
+func easyjson4ef6ea8bDecodeGoArwosOrgArwosSdkManifest3(in *jlexer.Lexer, out *Alias) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "group":
+			out.Group = string(in.String())
+		case "extend":
+			out.Extend = string(in.String())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjson4ef6ea8bEncodeGoArwosOrgArwosSdkManifest3(out *jwriter.Writer, in Alias) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"group\":"
+		out.RawString(prefix[1:])
+		out.String(string(in.Group))
+	}
+	{
+		const prefix string = ",\"extend\":"
+		out.RawString(prefix)
+		out.String(string(in.Extend))
+	}
+	out.RawByte('}')
+}
+
+// MarshalJSON supports json.Marshaler interface
+func (v Alias) MarshalJSON() ([]byte, error) {
+	w := jwriter.Writer{}
+	easyjson4ef6ea8bEncodeGoArwosOrgArwosSdkManifest3(&w, v)
+	return w.Buffer.BuildBytes(), w.Error
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v Alias) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjson4ef6ea8bEncodeGoArwosOrgArwosSdkManifest3(w, v)
+}
+
+// UnmarshalJSON supports json.Unmarshaler interface
+func (v *Alias) UnmarshalJSON(data []byte) error {
+	r := jlexer.Lexer{Data: data}
+	easyjson4ef6ea8bDecodeGoArwosOrgArwosSdkManifest3(&r, v)
+	return r.Error()
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *Alias) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjson4ef6ea8bDecodeGoArwosOrgArwosSdkManifest3(l, v)
 }

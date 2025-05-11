@@ -1,6 +1,7 @@
 .tools/
 .idea/
 .vscode/
+.plugins/
 
 bin/
 vendor/
@@ -23,3 +24,4 @@ coverage.out
 .env
 
 *.arwos
+*.dev.yaml

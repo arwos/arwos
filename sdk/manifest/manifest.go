@@ -7,32 +7,43 @@ package manifest
 
 //go:generate easyjson
 
-type Type uint64
+const FileName = "manifest.yaml"
+
+type Type string
 
 const (
-	TypeApp Type = 0
+	TypeService   Type = "service"
+	TypeComposite Type = "composite"
 )
 
 //easyjson:json
-type Manifest struct {
-	Name        string `json:"name"`
-	Package     string `json:"package"`
-	Description string `json:"description"`
-	Author      string `json:"author"`
-	Version     string `json:"version"`
-	Type        Type   `json:"type"`
-	Links       []Link `json:"links"`
-	Menu        Menu   `json:"menu"`
+type Model struct {
+	Type        Type    `json:"type" yaml:"type"`
+	Path        string  `json:"path" yaml:"path"`
+	Name        string  `json:"name" yaml:"name"`
+	Package     string  `json:"package" yaml:"package"`
+	Description string  `json:"description" yaml:"description"`
+	Author      string  `json:"author" yaml:"author"`
+	Version     string  `json:"version" yaml:"version"`
+	Menu        Menu    `json:"menu" yaml:"menu"`
+	Links       []Link  `json:"links,omitempty" yaml:"links,omitempty"`
+	Alias       []Alias `json:"alias,omitempty" yaml:"alias,omitempty"`
 }
 
 //easyjson:json
 type Link struct {
-	Url         string `json:"url"`
-	Description string `json:"description"`
+	Url         string `json:"url" yaml:"url"`
+	Description string `json:"description" yaml:"description"`
 }
 
 //easyjson:json
 type Menu struct {
-	Group string `json:"group"`
-	Title string `json:"title"`
+	Group string `json:"group" yaml:"group"`
+	Title string `json:"title" yaml:"title"`
+}
+
+//easyjson:json
+type Alias struct {
+	Group  string `json:"group" yaml:"group"`
+	Extend string `json:"extend" yaml:"extend"`
 }

@@ -8,6 +8,7 @@ package internal_test
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"testing"
 
 	"go.osspkg.com/casecheck"
@@ -21,8 +22,11 @@ func TestUnit_New(t *testing.T) {
 	tr.SetCode(123)
 	tr.SetMethod("com.example.app")
 	tr.SetCtx("user", "1234")
-	casecheck.NoError(t, tr.SetField("file1", []byte(`Hello world`)))
-	casecheck.Error(t, tr.SetField("file1", []byte(`Hello world`)))
+
+	_, err := tr.Body().Write([]byte(`Hello world`))
+	casecheck.NoError(t, err)
+	_, err = tr.Body().Write([]byte(`123456`))
+	casecheck.NoError(t, err)
 
 	buf := bytes.NewBuffer(nil)
 	casecheck.NoError(t, tr.Encode(buf))
@@ -46,13 +50,13 @@ func TestUnit_New(t *testing.T) {
 	}
 
 	{
-		val, err := tr.GetField("file1")
+		val, err := io.ReadAll(tr.Body())
 		casecheck.NoError(t, err)
-		casecheck.Equal(t, "Hello world", string(val))
+		casecheck.Equal(t, "Hello world123456", string(val))
 
-		val, err = tr.GetField("file2")
-		casecheck.Error(t, err)
-		casecheck.Nil(t, val)
+		val, err = io.ReadAll(tr.Body())
+		casecheck.NoError(t, err)
+		casecheck.Equal(t, val, []byte{})
 	}
 
 }

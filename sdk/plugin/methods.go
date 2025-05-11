@@ -6,6 +6,7 @@
 package plugin
 
 const (
-	defaultMethodInfo = "org.arwos.plugin.info"
-	defaultMethodEnvs = "org.arwos.plugin.envs"
+	defaultMethodInfo  = "_.info"
+	defaultMethodEnvs  = "_.envs"
+	defaultMethodWebUI = "_.webui"
 )

@@ -14,8 +14,6 @@ import (
 	"time"
 
 	"go.osspkg.com/ioutils/data"
-
-	"go.arwos.org/arwos/sdk/rpc/errs"
 )
 
 type Transport struct {
@@ -25,11 +23,10 @@ type Transport struct {
 
 func NewTransport() *Transport {
 	return &Transport{
-		data: data.NewBuffer(1024),
+		data: data.NewBuffer(128),
 		head: &Header{
 			Code:   0,
 			Method: "",
-			Fields: make([]Field, 0, 5),
 			Ctx:    make(map[string]string, 5),
 			Sys:    make(map[SysCode]string, 1),
 		},
@@ -43,7 +40,6 @@ func (v *Transport) Reset() {
 }
 
 func (v *Transport) SoftReset() {
-	v.head.Fields = v.head.Fields[:0]
 	for key := range v.head.Sys {
 		delete(v.head.Sys, key)
 	}
@@ -70,6 +66,7 @@ func (v *Transport) GetError() error {
 
 func (v *Transport) SetError(err error) {
 	if err == nil {
+		delete(v.head.Sys, SysError)
 		return
 	}
 	v.head.Sys[SysError] = err.Error()
@@ -82,7 +79,7 @@ func (v *Transport) Deadline() time.Time {
 			return t
 		}
 	}
-	return time.Now().Add(time.Second * 1)
+	return time.Time{}
 }
 
 func (v *Transport) SetDeadline(t time.Time) {
@@ -116,39 +113,24 @@ func (v *Transport) SetCtx(key, val string) {
 	v.head.Ctx[key] = val
 }
 
-func (v *Transport) SetField(name string, val []byte) (err error) {
-	name = strings.ToLower(name)
-	for _, field := range v.head.Fields {
-		if field.Name == name {
-			return errs.ErrAlreadyExist
-		}
-	}
-	field := Field{Name: name, Pos: v.data.Size(), Len: 0}
-	field.Len, err = v.data.Write(val)
-	v.head.Fields = append(v.head.Fields, field)
-	return
+func (v *Transport) Read(p []byte) (n int, err error) {
+	return v.data.Read(p)
 }
 
-func (v *Transport) GetFields() []string {
-	keys := make([]string, 0, len(v.head.Fields))
-	for _, field := range v.head.Fields {
-		keys = append(keys, field.Name)
-	}
-	return keys
+func (v *Transport) Bytes() []byte {
+	return v.data.Bytes()
 }
 
-func (v *Transport) GetField(name string) (val []byte, err error) {
-	name = strings.ToLower(name)
-	for _, field := range v.head.Fields {
-		if strings.ToLower(field.Name) == name {
-			if _, err = v.data.Seek(int64(field.Pos), data.SeekStart); err != nil {
-				return
-			}
-			return v.data.Next(field.Len), nil
-		}
-	}
+func (v *Transport) String() string {
+	return v.data.String()
+}
 
-	return nil, errs.ErrNotFound
+func (v *Transport) Write(p []byte) (n int, err error) {
+	return v.data.Write(p)
+}
+
+func (v *Transport) Seek(offset int64, whence int) (int64, error) {
+	return v.data.Seek(offset, whence)
 }
 
 func (v *Transport) Decode(r io.Reader) error {
@@ -172,6 +154,12 @@ func (v *Transport) Decode(r io.Reader) error {
 		return err
 	}
 	v.head = &h
+
+	v.data.Truncate(binary.MaxVarintLen64 + int(hl))
+
+	if _, err := v.data.Seek(0, data.SeekStart); err != nil {
+		return err
+	}
 
 	return nil
 }

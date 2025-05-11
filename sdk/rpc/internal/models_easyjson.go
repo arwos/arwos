@@ -4,7 +4,6 @@ package internal
 
 import (
 	json "encoding/json"
-
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
@@ -37,34 +36,11 @@ func easyjsonD2b7633eDecodeGoArwosOrgArwosSdkRpcInternal(in *jlexer.Lexer, out *
 			continue
 		}
 		switch key {
-		case "a":
+		case "i":
 			out.Code = int(in.Int())
-		case "b":
+		case "m":
 			out.Method = string(in.String())
 		case "c":
-			if in.IsNull() {
-				in.Skip()
-				out.Fields = nil
-			} else {
-				in.Delim('[')
-				if out.Fields == nil {
-					if !in.IsDelim(']') {
-						out.Fields = make([]Field, 0, 2)
-					} else {
-						out.Fields = []Field{}
-					}
-				} else {
-					out.Fields = (out.Fields)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v1 Field
-					(v1).UnmarshalEasyJSON(in)
-					out.Fields = append(out.Fields, v1)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "d":
 			if in.IsNull() {
 				in.Skip()
 			} else {
@@ -77,14 +53,14 @@ func easyjsonD2b7633eDecodeGoArwosOrgArwosSdkRpcInternal(in *jlexer.Lexer, out *
 				for !in.IsDelim('}') {
 					key := string(in.String())
 					in.WantColon()
-					var v2 string
-					v2 = string(in.String())
-					(out.Ctx)[key] = v2
+					var v1 string
+					v1 = string(in.String())
+					(out.Ctx)[key] = v1
 					in.WantComma()
 				}
 				in.Delim('}')
 			}
-		case "e":
+		case "s":
 			if in.IsNull() {
 				in.Skip()
 			} else {
@@ -97,9 +73,9 @@ func easyjsonD2b7633eDecodeGoArwosOrgArwosSdkRpcInternal(in *jlexer.Lexer, out *
 				for !in.IsDelim('}') {
 					key := SysCode(in.Int8Str())
 					in.WantColon()
-					var v3 string
-					v3 = string(in.String())
-					(out.Sys)[key] = v3
+					var v2 string
+					v2 = string(in.String())
+					(out.Sys)[key] = v2
 					in.WantComma()
 				}
 				in.Delim('}')
@@ -119,63 +95,49 @@ func easyjsonD2b7633eEncodeGoArwosOrgArwosSdkRpcInternal(out *jwriter.Writer, in
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"a\":"
+		const prefix string = ",\"i\":"
 		out.RawString(prefix[1:])
 		out.Int(int(in.Code))
 	}
 	{
-		const prefix string = ",\"b\":"
+		const prefix string = ",\"m\":"
 		out.RawString(prefix)
 		out.String(string(in.Method))
 	}
-	if len(in.Fields) != 0 {
+	if len(in.Ctx) != 0 {
 		const prefix string = ",\"c\":"
 		out.RawString(prefix)
 		{
-			out.RawByte('[')
-			for v4, v5 := range in.Fields {
-				if v4 > 0 {
-					out.RawByte(',')
-				}
-				(v5).MarshalEasyJSON(out)
-			}
-			out.RawByte(']')
-		}
-	}
-	if len(in.Ctx) != 0 {
-		const prefix string = ",\"d\":"
-		out.RawString(prefix)
-		{
 			out.RawByte('{')
-			v6First := true
-			for v6Name, v6Value := range in.Ctx {
-				if v6First {
-					v6First = false
+			v3First := true
+			for v3Name, v3Value := range in.Ctx {
+				if v3First {
+					v3First = false
 				} else {
 					out.RawByte(',')
 				}
-				out.String(string(v6Name))
+				out.String(string(v3Name))
 				out.RawByte(':')
-				out.String(string(v6Value))
+				out.String(string(v3Value))
 			}
 			out.RawByte('}')
 		}
 	}
 	if len(in.Sys) != 0 {
-		const prefix string = ",\"e\":"
+		const prefix string = ",\"s\":"
 		out.RawString(prefix)
 		{
 			out.RawByte('{')
-			v7First := true
-			for v7Name, v7Value := range in.Sys {
-				if v7First {
-					v7First = false
+			v4First := true
+			for v4Name, v4Value := range in.Sys {
+				if v4First {
+					v4First = false
 				} else {
 					out.RawByte(',')
 				}
-				out.Int8Str(int8(v7Name))
+				out.Int8Str(int8(v4Name))
 				out.RawByte(':')
-				out.String(string(v7Value))
+				out.String(string(v4Value))
 			}
 			out.RawByte('}')
 		}
@@ -205,84 +167,4 @@ func (v *Header) UnmarshalJSON(data []byte) error {
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *Header) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonD2b7633eDecodeGoArwosOrgArwosSdkRpcInternal(l, v)
-}
-func easyjsonD2b7633eDecodeGoArwosOrgArwosSdkRpcInternal1(in *jlexer.Lexer, out *Field) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "x":
-			out.Name = string(in.String())
-		case "y":
-			out.Pos = int(in.Int())
-		case "z":
-			out.Len = int(in.Int())
-		default:
-			in.SkipRecursive()
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonD2b7633eEncodeGoArwosOrgArwosSdkRpcInternal1(out *jwriter.Writer, in Field) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	{
-		const prefix string = ",\"x\":"
-		out.RawString(prefix[1:])
-		out.String(string(in.Name))
-	}
-	{
-		const prefix string = ",\"y\":"
-		out.RawString(prefix)
-		out.Int(int(in.Pos))
-	}
-	{
-		const prefix string = ",\"z\":"
-		out.RawString(prefix)
-		out.Int(int(in.Len))
-	}
-	out.RawByte('}')
-}
-
-// MarshalJSON supports json.Marshaler interface
-func (v Field) MarshalJSON() ([]byte, error) {
-	w := jwriter.Writer{}
-	easyjsonD2b7633eEncodeGoArwosOrgArwosSdkRpcInternal1(&w, v)
-	return w.Buffer.BuildBytes(), w.Error
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v Field) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonD2b7633eEncodeGoArwosOrgArwosSdkRpcInternal1(w, v)
-}
-
-// UnmarshalJSON supports json.Unmarshaler interface
-func (v *Field) UnmarshalJSON(data []byte) error {
-	r := jlexer.Lexer{Data: data}
-	easyjsonD2b7633eDecodeGoArwosOrgArwosSdkRpcInternal1(&r, v)
-	return r.Error()
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *Field) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonD2b7633eDecodeGoArwosOrgArwosSdkRpcInternal1(l, v)
 }

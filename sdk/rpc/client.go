@@ -52,6 +52,10 @@ func NewRequest() Request {
 	return internal.NewTransport()
 }
 
+func NewTransport() Transport {
+	return internal.NewTransport()
+}
+
 func NewClient(address string, opts ...Option) (Client, error) {
 	var err error
 
@@ -89,10 +93,12 @@ func (c *_client) Call(ctx context.Context, req Request) Response {
 		return resp
 	}
 
-	deadline := time.Now().Add(c.opt.Timeout)
-	tr.SetDeadline(deadline)
+	if tr.Deadline().IsZero() {
+		deadline := time.Now().Add(c.opt.Timeout)
+		tr.SetDeadline(deadline)
+	}
 
-	ctx, ctxCancel := context.WithDeadline(ctx, deadline)
+	ctx, ctxCancel := context.WithDeadline(ctx, tr.Deadline())
 	defer func() { ctxCancel() }()
 
 	err := c.cli.Call(ctx, func(ctx context.Context, w io.Writer, r io.Reader) error {

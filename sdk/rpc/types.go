@@ -7,19 +7,24 @@ package rpc
 
 import (
 	"context"
+	"io"
+	"time"
 )
 
 type Reader interface {
 	GetCtx(key string) (string, bool)
 	GetCtxKeys() []string
-	GetFields() []string
-	GetField(name string) ([]byte, error)
+	io.Reader
+	io.Seeker
+	Bytes() []byte
+	String() string
 }
 
 type Writer interface {
 	SetCode(c int)
 	SetCtx(key, val string)
-	SetField(name string, val []byte) error
+	io.Writer
+	io.Seeker
 }
 
 type GuardCtx interface {
@@ -42,14 +47,38 @@ type Server interface {
 type Request interface {
 	SetMethod(method string)
 	SetCtx(key, val string)
-	SetField(name string, val []byte) error
+	SetDeadline(t time.Time)
+	Deadline() time.Time
+	io.ReadSeeker
+	Bytes() []byte
+	String() string
 }
 
 type Response interface {
 	Code() int
+	Method() string
 	GetError() error
 	GetCtx(key string) (string, bool)
 	GetCtxKeys() []string
-	GetFields() []string
-	GetField(name string) ([]byte, error)
+	io.WriteSeeker
+	Bytes() []byte
+	String() string
+}
+
+type Transport interface {
+	SoftReset()
+	Code() int
+	SetCode(c int)
+	GetError() error
+	SetError(err error)
+	Deadline() time.Time
+	SetDeadline(t time.Time)
+	Method() string
+	SetMethod(method string)
+	GetCtx(key string) (string, bool)
+	GetCtxKeys() []string
+	SetCtx(key, val string)
+	io.ReadWriteSeeker
+	Bytes() []byte
+	String() string
 }

@@ -3,6 +3,7 @@ package runner
 import (
 	"context"
 
+	"go.arwos.org/arwos/sdk/manifest"
 	"go.osspkg.com/ioutils/fs"
 )
 
@@ -10,14 +11,18 @@ type Runner interface {
 }
 
 type _runner struct {
-	conf Config
+	conf RunnerConfig
 }
 
-func New(c Config) Runner {
-	return &_runner{conf: c}
+func New(c *ConfigGroup) Runner {
+	return &_runner{conf: c.Runner}
 }
 
-func (v *_runner) Up(ctx context.Context) error {
+func (v *_runner) Up(_ context.Context) error {
+	list, err := v.Scan()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -26,12 +31,16 @@ func (v *_runner) Down() error {
 }
 
 func (v *_runner) Scan() ([]PluginInfo, error) {
-	list, err := fs.SearchFilesByExt(v.conf.Folder, pluginExt)
+	list, err := fs.SearchFiles(v.conf.Folder, manifest.FileName)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, item := range list {
+	result := make([]PluginInfo, 0, len(list))
 
+	for _, item := range list {
+		result = append(result, ReadPluginInfo(item))
 	}
+
+	return result, nil
 }

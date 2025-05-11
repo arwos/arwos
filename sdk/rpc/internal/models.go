@@ -9,16 +9,8 @@ package internal
 
 //easyjson:json
 type Header struct {
-	Code   int                `json:"a"`
-	Method string             `json:"b"`
-	Fields []Field            `json:"c,omitempty"`
-	Ctx    map[string]string  `json:"d,omitempty"`
-	Sys    map[SysCode]string `json:"e,omitempty"`
-}
-
-//easyjson:json
-type Field struct {
-	Name string `json:"x"`
-	Pos  int    `json:"y"`
-	Len  int    `json:"z"`
+	Code   int                `json:"i"`
+	Method string             `json:"m"`
+	Ctx    map[string]string  `json:"c,omitempty"`
+	Sys    map[SysCode]string `json:"s,omitempty"`
 }
